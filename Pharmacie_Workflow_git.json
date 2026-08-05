@@ -1,0 +1,647 @@
+{
+  "name": "Pharmacie_AI_Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "YOUR_WHATSAPP_PHONE_NUMBER_ID",
+        "recipientPhoneNumber": "={{ \n  (() => {\n    const phone = $('WhatsApp Trigger').item.json.contacts[0].wa_id;\n    \n    // Si es un número móvil de Argentina (empieza con 549)\n    if (/^549/.test(phone)) {\n      // Captura: 549 + (área de 3 o 4 dígitos) + (número local de 7 dígitos)\n      return phone.replace(/^549(\\d{3,4})(\\d{7})$/, '54$115$2');\n    }\n    \n    // Para cualquier otro país (Alemania, EE.UU., España, etc.)\n    return phone;\n  })() \n}}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1488,
+        1536
+      ],
+      "id": "2e9515f4-b382-4d6f-a12b-eedaffca6311",
+      "name": "Send message",
+      "webhookId": "ed60b34e-01b1-40c9-9b27-c2bf7372f28f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "fSdwwmfTJ1qJiWeN",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        1344
+      ],
+      "id": "5add1a61-39f4-4538-a123-f664719b31e3",
+      "name": "WhatsApp Trigger",
+      "webhookId": "ebcaa682-310c-4b54-9896-bcd834c09128",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "oSHnaUdYvHMfSoYz",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $json.messages[0].image.id }}"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -336,
+        1536
+      ],
+      "id": "8347797e-dfa2-4e03-bdbd-2f07795c1976",
+      "name": "Download media",
+      "webhookId": "ae4babbf-ba33-4f36-acb3-d5621dceaebb",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "fSdwwmfTJ1qJiWeN",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "=text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0f98fee2-dbbe-409f-a76a-34a6276bd725"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "texto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0a695df8-2288-4ec5-aaef-9408c9518054",
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "=image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "imagenes"
+            }
+          ]
+        },
+        "options": {
+          "allMatchingOutputs": false
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -560,
+        1392
+      ],
+      "id": "7e6e7edd-f23a-4a0f-8162-a9da16202a10",
+      "name": "Switch",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        1760
+      ],
+      "id": "4512c833-f615-4768-84d5-4621d022032c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "MUnjVO0yQ3Zxxjxd",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Important: add keyID to remember the conversation",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1024,
+        1312
+      ],
+      "typeVersion": 1,
+      "id": "3f9b96bd-3ab3-4d36-8a0e-5280b6599781",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-tesseractjs.tesseractNode",
+      "typeVersion": 1,
+      "position": [
+        112,
+        1536
+      ],
+      "id": "a58192bc-99c6-4600-813e-6ca2038e5558",
+      "name": "Tesseract"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3d159be2-cb8c-4944-844a-8cb0b403b759",
+              "leftValue": "={{ $json.confidence }}",
+              "rightValue": 65,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        336,
+        1536
+      ],
+      "id": "3969b3a0-e73d-4958-b411-cce0c7e91ce5",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        864,
+        1328
+      ],
+      "id": "4fbd3a56-246a-4ec1-968f-59c607db6e1b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9e0dd09a-93ff-4bba-9e49-a59c7c20ddaf",
+              "leftValue": "={{ $json.messages[0].text.body }}",
+              "rightValue": "/reset",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "={{ false }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        560,
+        1248
+      ],
+      "id": "8f8131cb-42b4-4262-8de0-d1ed3fc767ed",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "path": "597801dd-e748-4dbe-b2b1-64d749d4a4af",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -784,
+        1584
+      ],
+      "id": "79673313-fa6a-4409-af76-a195bf3abacf",
+      "name": "Webhook",
+      "webhookId": "597801dd-e748-4dbe-b2b1-64d749d4a4af"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "text": "Extrae el texto de esta imagen",
+        "inputType": "binary",
+        "simplify": false,
+        "options": {
+          "maxOutputTokens": 4096
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        1600
+      ],
+      "id": "72b8a0a9-a170-4edc-8e58-4482d92c196d",
+      "name": "AI Image Analyzer",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "MUnjVO0yQ3Zxxjxd",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -112,
+        1536
+      ],
+      "id": "837817ad-8940-425c-91c9-ef51a576c151",
+      "name": "Download Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "8jKNSY53dDE8buA8",
+          "name": "Header Auth account"
+        },
+        "whatsAppApi": {
+          "id": "fSdwwmfTJ1qJiWeN",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = [];\n\nfor (let item of $input.all()) {\n  const data = item.json;\n\n  // 1. Extraer texto si viene de Gemini Vision (candidates -> content -> parts -> text)\n  const textFromGemini = data.candidates?.[0]?.content?.parts?.[0]?.text;\n\n  // 2. Extraer texto si viene de un OCR o propiedad directa .text\n  const textFromImageOrOcr = data.text || data.ocr_text || data.ai_analyzed_text;\n\n  // 3. Extraer texto si viene de WhatsApp\n  const whatsappMessage = data.messages?.[0] || data.entry?.[0]?.changes?.[0]?.value?.messages?.[0] || data.body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];\n  const textFromWhatsapp = whatsappMessage?.text?.body || whatsappMessage?.image?.caption;\n\n  // Determinar el texto final según prioridad\n  const finalText = textFromGemini || textFromImageOrOcr || textFromWhatsapp || \"\";\n\n  // Retornamos UN OBJETO NUEVO que contenga ÚNICAMENTE la propiedad 'text'\n  output.push({\n    json: {\n      text: typeof finalText === 'string' ? finalText.trim() : String(finalText)\n    }\n  });\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        1536
+      ],
+      "id": "d2605183-c225-4947-9e00-4c48a2ea6b42",
+      "name": "Unificate JSON"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Mensaje actual del cliente:\n{{$json.text }}",
+        "options": {
+          "systemMessage": "=Sos el asistente virtual de Farmacia Zimmermann. Hablás por WhatsApp de forma clara, cordial y directa.\n\nDATOS DE LA FARMACIA:\n- Horarios: Lunes a viernes de 09:00 a 18:00 hs | Sábados de 08:00 a 12:00 hs.\n\nREGLAS DE INTERACCIÓN Y MEMORIA:\n- Tenés memoria de la conversación. Si el cliente ya saludó o pidió algo directo, NO vuelvas a presentarte ni a dar el saludo inicial.\n- Saludo inicial (solo primer mensaje): \"¡Hola! 👋 Bienvenido/a a *Farmacia Zimmermann*. Te recordamos que nuestro horario de atención es de Lunes a Viernes de 09 a 18 hs y Sábados de 08 a 12 hs. ¿En qué te podemos ayudar hoy?\"\n\nCÓMO USAR LA HERRAMIENTA (search_stock_pharmacie):\n- El parámetro \"query\" debe ser ÚNICAMENTE texto plano en MAYÚSCULAS. NUNCA generes código ni sentencias SQL (NO uses SELECT, WHERE, ILIKE, etc.).\n  - ❌ INCORRECTO: SELECT * FROM productos WHERE...\n  - ❌ INCORRECTO: IBUPIRAC 400 mg\n  - ✅ CORRECTO: IBUPIRAC\n  - ✅ CORRECTO: IBUPIRAC,AMOXICILINA\n- Términos: Solo el nombre principal de la marca o droga. Separá combinaciones (\"+\"). Omití dosis, presentaciones y cantidades.\n- Pasa los términos separados por coma y sin espacios. Llamá a la herramienta UNA SOLA VEZ por consulta.\n- Si la información es incompleta o hay dudas, preguntá antes de buscar. Si envía imagen/receta, procesá el texto o pedí reenvío si no es legible.\n\nFORMATO OBLIGATORIO DE RESPUESTA (WHATSAPP):\nSIEMPRE que informes stock, precios (incluso ante preguntas de seguimiento sobre un precio) o confirmaciones de disponibilidad, usá ESTE DISEÑO EXACTO:\n\n💊 *Consulta de Medicamentos*\n\nTenemos disponible:\n• *[NOMBRE / MARCA]* ([presentación / dosis])\n  💵 *Precio:* $[precio_publico] | 🏷️ *PAMI:* $[precio_afiliado]\n\n¿Querés que te guardemos una unidad?\n\nREGLAS DE FORMATO Y MONEDA:\n- Precios: Siempre con signo $ y punto de miles (Ej: $2.700, $4.500).\n- Si no hay precio PAMI, omití \"| 🏷️ PAMI: $...\".\n- Si hay varios productos, usá la viñeta (•) para cada uno dentro de la plantilla.\n- Si el cliente pregunta otra cosa (envíos, pagos), respondé en 1 línea. Si agradece o se despide, sé breve sin volver a poner la plantilla."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1136,
+        1536
+      ],
+      "id": "6a5cae66-7226-40f1-80f5-d1c893d9b37a",
+      "name": "Orchestra",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT DISTINCT ON (id)\n    id, marca_comercial, principio_activo, presentacion, laboratorio,\n    precio_publico::FLOAT AS precio_publico, cobertura_pami,\n    precio_afiliado::FLOAT AS precio_afiliado, stock_actual, condicion_venta\nFROM productos\nWHERE stock_actual > 0\n  AND EXISTS (\n    SELECT 1\n    FROM unnest(string_to_array(UPPER(trim('{{ $fromAI(\"query\", \"Lista de terminos de busqueda separados por coma sin espacios\", \"string\") }}')), ',')) AS t(term)\n    WHERE marca_comercial ILIKE '%' || trim(t.term) || '%'\n       OR principio_activo ILIKE '%' || trim(t.term) || '%'\n  )\nORDER BY id, stock_actual DESC\nLIMIT 10;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.7,
+      "position": [
+        1280,
+        1760
+      ],
+      "id": "5ffebb19-c8c9-4e7e-b810-5459dfbc2d28",
+      "name": "search_stock_pharmacie",
+      "notesInFlow": false,
+      "credentials": {
+        "postgres": {
+          "id": "faycO9ZTZJuIwURP",
+          "name": "Postgres account"
+        }
+      },
+      "notes": "Busca en la base de datos de la farmacia el stock, precio y presentación \nde medicamentos por marca comercial o principio activo. Usar SIEMPRE que \nel cliente pregunte por disponibilidad, precio o stock de un medicamento \nespecífico, mencione el nombre de un medicamento, o envíe una receta médica."
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -560,
+        1632
+      ],
+      "id": "cb3d026c-9f1b-4298-90f4-2c947556d05d",
+      "name": "Only to production (meta)"
+    },
+    {
+      "parameters": {
+        "mode": "delete",
+        "deleteMode": "all"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1,
+      "position": [
+        784,
+        1088
+      ],
+      "id": "3c003a8c-4b62-4591-9bfe-08f76af84c1c",
+      "name": "Clean memory",
+      "alwaysOutputData": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download media": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download media",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Orchestra",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tesseract": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Unificate JSON",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Image Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Clean memory",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Orchestra",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Clean memory",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unificate JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Only to production (meta)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Image Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Unificate JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Tesseract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unificate JSON": {
+      "main": [
+        [
+          {
+            "node": "Orchestra",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orchestra": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_stock_pharmacie": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestra",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean memory": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "GENERIC_INSTANCE_ID"
+  },
+  "nodeGroups": [],
+  "id": "fGqlLynEUcfOODJl",
+  "tags": []
+}
