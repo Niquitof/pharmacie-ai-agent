@@ -3,30 +3,6 @@
   "nodes": [
     {
       "parameters": {
-        "operation": "send",
-        "phoneNumberId": "YOUR_WHATSAPP_PHONE_NUMBER_ID",
-        "recipientPhoneNumber": "={{ \n  (() => {\n    const phone = $('WhatsApp Trigger').item.json.contacts[0].wa_id;\n    \n    // Si es un número móvil de Argentina (empieza con 549)\n    if (/^549/.test(phone)) {\n      // Captura: 549 + (área de 3 o 4 dígitos) + (número local de 7 dígitos)\n      return phone.replace(/^549(\\d{3,4})(\\d{7})$/, '54$115$2');\n    }\n    \n    // Para cualquier otro país (Alemania, EE.UU., España, etc.)\n    return phone;\n  })() \n}}",
-        "textBody": "={{ $json.output }}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.whatsApp",
-      "typeVersion": 1.1,
-      "position": [
-        1488,
-        1536
-      ],
-      "id": "2e9515f4-b382-4d6f-a12b-eedaffca6311",
-      "name": "Send message",
-      "webhookId": "ed60b34e-01b1-40c9-9b27-c2bf7372f28f",
-      "credentials": {
-        "whatsAppApi": {
-          "id": "fSdwwmfTJ1qJiWeN",
-          "name": "WhatsApp account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "updates": [
           "messages"
         ],
@@ -35,8 +11,8 @@
       "type": "n8n-nodes-base.whatsAppTrigger",
       "typeVersion": 1,
       "position": [
-        -784,
-        1344
+        -1296,
+        1392
       ],
       "id": "5add1a61-39f4-4538-a123-f664719b31e3",
       "name": "WhatsApp Trigger",
@@ -45,8 +21,8 @@
       "executeOnce": false,
       "credentials": {
         "whatsAppTriggerApi": {
-          "id": "oSHnaUdYvHMfSoYz",
-          "name": "WhatsApp OAuth account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
         }
       }
     },
@@ -54,21 +30,21 @@
       "parameters": {
         "resource": "media",
         "operation": "mediaUrlGet",
-        "mediaGetId": "={{ $json.messages[0].image.id }}"
+        "mediaGetId": "={{ $('Normalizador').item.json.messages[0].image.id }}"
       },
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        -336,
-        1536
+        288,
+        1824
       ],
       "id": "8347797e-dfa2-4e03-bdbd-2f07795c1976",
       "name": "Download media",
       "webhookId": "ae4babbf-ba33-4f36-acb3-d5621dceaebb",
       "credentials": {
         "whatsAppApi": {
-          "id": "fSdwwmfTJ1qJiWeN",
-          "name": "WhatsApp account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
         }
       }
     },
@@ -86,19 +62,19 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.messages[0].type }}",
-                    "rightValue": "=text",
+                    "id": "5d1b5c63-ff2f-4a1a-8caf-30188335e7b9",
+                    "leftValue": "={{ $('Normalizador').item.json.messages[0].type }}",
+                    "rightValue": "text",
                     "operator": {
                       "type": "string",
                       "operation": "equals"
-                    },
-                    "id": "0f98fee2-dbbe-409f-a76a-34a6276bd725"
+                    }
                   }
                 ],
                 "combinator": "and"
               },
               "renameOutput": true,
-              "outputKey": "texto"
+              "outputKey": "Text"
             },
             {
               "conditions": {
@@ -110,9 +86,9 @@
                 },
                 "conditions": [
                   {
-                    "id": "0a695df8-2288-4ec5-aaef-9408c9518054",
-                    "leftValue": "={{ $json.messages[0].type }}",
-                    "rightValue": "=image",
+                    "id": "e8b55230-ae2f-40fc-80d0-effa1da2183c",
+                    "leftValue": "={{ $('Normalizador').item.json.messages[0].type }}",
+                    "rightValue": "image",
                     "operator": {
                       "type": "string",
                       "operation": "equals"
@@ -122,19 +98,17 @@
                 "combinator": "and"
               },
               "renameOutput": true,
-              "outputKey": "imagenes"
+              "outputKey": "Image"
             }
           ]
         },
-        "options": {
-          "allMatchingOutputs": false
-        }
+        "options": {}
       },
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -560,
-        1392
+        -48,
+        1728
       ],
       "id": "7e6e7edd-f23a-4a0f-8162-a9da16202a10",
       "name": "Switch",
@@ -148,15 +122,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        1136,
-        1760
+        1768,
+        2040
       ],
       "id": "4512c833-f615-4768-84d5-4621d022032c",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "MUnjVO0yQ3Zxxjxd",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
         }
       }
     },
@@ -167,8 +141,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        1024,
-        1312
+        1616,
+        1712
       ],
       "typeVersion": 1,
       "id": "3f9b96bd-3ab3-4d36-8a0e-5280b6599781",
@@ -181,8 +155,8 @@
       "type": "n8n-nodes-tesseractjs.tesseractNode",
       "typeVersion": 1,
       "position": [
-        112,
-        1536
+        736,
+        1824
       ],
       "id": "a58192bc-99c6-4600-813e-6ca2038e5558",
       "name": "Tesseract"
@@ -214,61 +188,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        336,
-        1536
+        960,
+        1824
       ],
       "id": "3969b3a0-e73d-4958-b411-cce0c7e91ce5",
       "name": "If"
-    },
-    {
-      "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "={{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}",
-        "contextWindowLength": 15
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.4,
-      "position": [
-        864,
-        1328
-      ],
-      "id": "4fbd3a56-246a-4ec1-968f-59c607db6e1b",
-      "name": "Simple Memory"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "9e0dd09a-93ff-4bba-9e49-a59c7c20ddaf",
-              "leftValue": "={{ $json.messages[0].text.body }}",
-              "rightValue": "/reset",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "looseTypeValidation": "={{ false }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        560,
-        1248
-      ],
-      "id": "8f8131cb-42b4-4262-8de0-d1ed3fc767ed",
-      "name": "If1"
     },
     {
       "parameters": {
@@ -280,8 +204,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -784,
-        1584
+        -1296,
+        1632
       ],
       "id": "79673313-fa6a-4409-af76-a195bf3abacf",
       "name": "Webhook",
@@ -307,21 +231,21 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.2,
       "position": [
-        560,
-        1600
+        1184,
+        1888
       ],
       "id": "72b8a0a9-a170-4edc-8e58-4482d92c196d",
       "name": "AI Image Analyzer",
       "credentials": {
         "googlePalmApi": {
-          "id": "MUnjVO0yQ3Zxxjxd",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
         }
       }
     },
     {
       "parameters": {
-        "url": "={{ $json.url }}",
+        "url": "={{ $('Normalizador').item.json.messages[0].image.url }}",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "whatsAppApi",
         "options": {
@@ -335,31 +259,31 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -112,
-        1536
+        512,
+        1824
       ],
       "id": "837817ad-8940-425c-91c9-ef51a576c151",
       "name": "Download Image",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "8jKNSY53dDE8buA8",
-          "name": "Header Auth account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
         },
         "whatsAppApi": {
-          "id": "fSdwwmfTJ1qJiWeN",
-          "name": "WhatsApp account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const output = [];\n\nfor (let item of $input.all()) {\n  const data = item.json;\n\n  // 1. Extraer texto si viene de Gemini Vision (candidates -> content -> parts -> text)\n  const textFromGemini = data.candidates?.[0]?.content?.parts?.[0]?.text;\n\n  // 2. Extraer texto si viene de un OCR o propiedad directa .text\n  const textFromImageOrOcr = data.text || data.ocr_text || data.ai_analyzed_text;\n\n  // 3. Extraer texto si viene de WhatsApp\n  const whatsappMessage = data.messages?.[0] || data.entry?.[0]?.changes?.[0]?.value?.messages?.[0] || data.body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];\n  const textFromWhatsapp = whatsappMessage?.text?.body || whatsappMessage?.image?.caption;\n\n  // Determinar el texto final según prioridad\n  const finalText = textFromGemini || textFromImageOrOcr || textFromWhatsapp || \"\";\n\n  // Retornamos UN OBJETO NUEVO que contenga ÚNICAMENTE la propiedad 'text'\n  output.push({\n    json: {\n      text: typeof finalText === 'string' ? finalText.trim() : String(finalText)\n    }\n  });\n}\n\nreturn output;"
+        "jsCode": "const output = [];\n\nfor (let item of $input.all()) {\n  const data = item.json;\n\n  // 1. Extraer texto si viene de Gemini Vision / AI Image Analyzer\n  const textFromGemini = data.candidates?.[0]?.content?.parts?.[0]?.text;\n\n  // 2. Extraer texto si viene de Tesseract u OCR directo\n  const textFromOcr = data.text || data.ocr_text || data.ai_analyzed_text;\n\n  // 3. Extraer texto buscando en todas las posibles estructuras de WhatsApp (Normalizador, Test o Producción)\n  const normMessage = $('Normalizador')?.first()?.json?.messages?.[0];\n  const origMessage = data.messages?.[0] \n                   || data.entry?.[0]?.changes?.[0]?.value?.messages?.[0] \n                   || data.body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];\n\n  const textFromWhatsapp = normMessage?.text?.body \n                        || normMessage?.image?.caption \n                        || origMessage?.text?.body \n                        || origMessage?.image?.caption;\n\n  // 4. Determinar el texto final según prioridad (si viene de OCR/Visión prioriza la lectura de imagen, sino toma el texto enviado)\n  const finalText = textFromGemini || textFromOcr || textFromWhatsapp || \"\";\n\n  output.push({\n    json: {\n      text: typeof finalText === 'string' ? finalText.trim() : String(finalText)\n    }\n  });\n}\n\nreturn output;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        848,
-        1536
+        1472,
+        1824
       ],
       "id": "d2605183-c225-4947-9e00-4c48a2ea6b42",
       "name": "Unificate JSON"
@@ -369,14 +293,14 @@
         "promptType": "define",
         "text": "=Mensaje actual del cliente:\n{{$json.text }}",
         "options": {
-          "systemMessage": "=Sos el asistente virtual de Farmacia Zimmermann. Hablás por WhatsApp de forma clara, cordial y directa.\n\nDATOS DE LA FARMACIA:\n- Horarios: Lunes a viernes de 09:00 a 18:00 hs | Sábados de 08:00 a 12:00 hs.\n\nREGLAS DE INTERACCIÓN Y MEMORIA:\n- Tenés memoria de la conversación. Si el cliente ya saludó o pidió algo directo, NO vuelvas a presentarte ni a dar el saludo inicial.\n- Saludo inicial (solo primer mensaje): \"¡Hola! 👋 Bienvenido/a a *Farmacia Zimmermann*. Te recordamos que nuestro horario de atención es de Lunes a Viernes de 09 a 18 hs y Sábados de 08 a 12 hs. ¿En qué te podemos ayudar hoy?\"\n\nCÓMO USAR LA HERRAMIENTA (search_stock_pharmacie):\n- El parámetro \"query\" debe ser ÚNICAMENTE texto plano en MAYÚSCULAS. NUNCA generes código ni sentencias SQL (NO uses SELECT, WHERE, ILIKE, etc.).\n  - ❌ INCORRECTO: SELECT * FROM productos WHERE...\n  - ❌ INCORRECTO: IBUPIRAC 400 mg\n  - ✅ CORRECTO: IBUPIRAC\n  - ✅ CORRECTO: IBUPIRAC,AMOXICILINA\n- Términos: Solo el nombre principal de la marca o droga. Separá combinaciones (\"+\"). Omití dosis, presentaciones y cantidades.\n- Pasa los términos separados por coma y sin espacios. Llamá a la herramienta UNA SOLA VEZ por consulta.\n- Si la información es incompleta o hay dudas, preguntá antes de buscar. Si envía imagen/receta, procesá el texto o pedí reenvío si no es legible.\n\nFORMATO OBLIGATORIO DE RESPUESTA (WHATSAPP):\nSIEMPRE que informes stock, precios (incluso ante preguntas de seguimiento sobre un precio) o confirmaciones de disponibilidad, usá ESTE DISEÑO EXACTO:\n\n💊 *Consulta de Medicamentos*\n\nTenemos disponible:\n• *[NOMBRE / MARCA]* ([presentación / dosis])\n  💵 *Precio:* $[precio_publico] | 🏷️ *PAMI:* $[precio_afiliado]\n\n¿Querés que te guardemos una unidad?\n\nREGLAS DE FORMATO Y MONEDA:\n- Precios: Siempre con signo $ y punto de miles (Ej: $2.700, $4.500).\n- Si no hay precio PAMI, omití \"| 🏷️ PAMI: $...\".\n- Si hay varios productos, usá la viñeta (•) para cada uno dentro de la plantilla.\n- Si el cliente pregunta otra cosa (envíos, pagos), respondé en 1 línea. Si agradece o se despide, sé breve sin volver a poner la plantilla."
+          "systemMessage": "=Sos el asistente virtual de Farmacia Zimmermann. Hablás por WhatsApp de forma clara, cordial y directa. La farmacéutica a cargo es Alicia.\n\n1. PRIORIDAD MÁXIMA - ATENCIÓN HUMANA ([TRANSFER_HUMAN]):\nSi el cliente pide hablar con una persona, Alicia, operador, farmacéutico/a, empleado/a o expresa disconformidad con el bot:\n- Responde de forma cordial indicando que lo transferís con Alicia o el personal de la farmacia.\n- OBLIGATORIO: Agregá al final exacto de tu mensaje la etiqueta: [TRANSFER_HUMAN]\n- (Si aplica esta regla, IGNORÁ cualquier otra regla de saludo o búsqueda de productos).\n\n2. MEMORIA Y SALUDOS:\n- Si el historial está VACÍO y SOLO saludó (\"Hola\"): \"¡Hola! 👋 Bienvenido/a a *Farmacia Zimmermann*. ¿En qué te podemos ayudar hoy?\"\n- Si el historial está VACÍO y PIDIÓ algo directo (\"Hola, busco ibuprofeno\"): Saludá brevemente (\"¡Hola! 👋 Con gusto te consulto...\") y buscá el producto.\n- Si el historial NO está vacío: NO vuelvas a saludar ni te presentes. Responde directo a la consulta.\n\n3. USO DE HERRAMIENTAS (TOOLS):\n• search_stock_pharmacie: Úsala SOLO para stock y precios. \n  - El parámetro \"query\" debe ser texto plano en MAYÚSCULAS sin dosis ni presentaciones (Ej: IBUPIRAC o IBUPIRAC,AMOXICILINA).\n  - NUNCA generes código ni SQL. Llamala una sola vez por consulta.\n• get_pharmacy_info: Úsala para horarios, dirección, envíos, medios de pago o farmacia de turno.\n\n4. FORMATO DE RESPUESTA DE MEDICAMENTOS (OBLIGATORIO):\nCuando informes stock o precios, usá ESTE DISEÑO EXACTO:\n\nTenemos disponible:\n• *[NOMBRE / MARCA]* ([presentación / dosis])\n  💵 *Precio:* $[precio_publico] | 🏷️ *PAMI:* $[precio_afiliado]\n\n¿Querés que te guardemos una unidad?\n\n(Precios con $ y punto de miles. Si no hay PAMI, omití esa parte. Si no hay stock o pregunta otra cosa, responde brevemente en 1-2 líneas).\n\n5. CIERRE DE SESIÓN ([END_SESSION]):\nSi el cliente se despide (ej: 'Chau', 'Muchas gracias, eso es todo'), responde amablemente y agregá al final exacto la etiqueta: [END_SESSION]"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        1136,
-        1536
+        1824,
+        1824
       ],
       "id": "6a5cae66-7226-40f1-80f5-d1c893d9b37a",
       "name": "Orchestra",
@@ -391,16 +315,16 @@
       "type": "n8n-nodes-base.postgresTool",
       "typeVersion": 2.7,
       "position": [
-        1280,
-        1760
+        1896,
+        2040
       ],
       "id": "5ffebb19-c8c9-4e7e-b810-5459dfbc2d28",
       "name": "search_stock_pharmacie",
       "notesInFlow": false,
       "credentials": {
         "postgres": {
-          "id": "faycO9ZTZJuIwURP",
-          "name": "Postgres account"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
         }
       },
       "notes": "Busca en la base de datos de la farmacia el stock, precio y presentación \nde medicamentos por marca comercial o principio activo. Usar SIEMPRE que \nel cliente pregunte por disponibilidad, precio o stock de un medicamento \nespecífico, mencione el nombre de un medicamento, o envíe una receta médica."
@@ -414,8 +338,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        -560,
-        1632
+        -1072,
+        1680
       ],
       "id": "cb3d026c-9f1b-4298-90f4-2c947556d05d",
       "name": "Only to production (meta)"
@@ -428,12 +352,697 @@
       "type": "@n8n/n8n-nodes-langchain.memoryManager",
       "typeVersion": 1.1,
       "position": [
-        784,
-        1088
+        1408,
+        1536
       ],
       "id": "3c003a8c-4b62-4591-9bfe-08f76af84c1c",
       "name": "Clean memory",
       "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT clave, valor \nFROM informacion_farmacia\n\nUNION ALL\n\nSELECT 'guardia_hoy' AS clave, \n       nombre_farmacia || ' (' || direccion || ' - Tel: ' || telefono || ')' AS valor \nFROM farmacias_turno \nWHERE fecha = CURRENT_DATE;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.7,
+      "position": [
+        2024,
+        2040
+      ],
+      "id": "cc4c2e36-1605-44be-8872-97befe0e35a2",
+      "name": "get_pharmacy_info",
+      "notesInFlow": false,
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      },
+      "notes": "Busca en la base de datos de la farmacia el stock, precio y presentación \nde medicamentos por marca comercial o principio activo. Usar SIEMPRE que \nel cliente pregunte por disponibilidad, precio o stock de un medicamento \nespecífico, mencione el nombre de un medicamento, o envíe una receta médica."
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Normalizador').item.json.contacts[0].wa_id }}",
+        "tableName": "clients_chat_histories",
+        "contextWindowLength": 12
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.4,
+      "position": [
+        1504,
+        1712
+      ],
+      "id": "3bb7e7d9-ffea-485e-9e9d-e75cdd899a43",
+      "name": "clients_memory",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1296,
+        912
+      ],
+      "id": "295b75f4-1e6a-4eb6-be49-8b107c95e5bb",
+      "name": "Delete client memory by time"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM clients_chat_histories\nWHERE created_at < NOW() - INTERVAL '4 hours';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        -1072,
+        912
+      ],
+      "id": "c34d1517-612a-4075-8cb3-7e9d0e966962",
+      "name": "Check >4 hours history",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM clients_chat_histories\nWHERE session_id = '{{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2896,
+        1824
+      ],
+      "id": "4666ab8d-fc1f-44e9-8e44-9c6c467a595b",
+      "name": "End session by intention",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "YOUR_WHATSAPP_PHONE_NUMBER_ID",
+        "recipientPhoneNumber": "YOUR_RECIPIENT_PHONE",
+        "textBody": "={{ $('Clean [END_SESSION]').item.json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        3120,
+        1824
+      ],
+      "id": "ac5ac436-5536-44f1-a535-a6256331be70",
+      "name": "Close Message",
+      "webhookId": "ed60b34e-01b1-40c9-9b27-c2bf7372f28f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "YOUR_WHATSAPP_PHONE_NUMBER_ID",
+        "recipientPhoneNumber": "YOUR_RECIPIENT_PHONE",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        2672,
+        2016
+      ],
+      "id": "2e9515f4-b382-4d6f-a12b-eedaffca6311",
+      "name": "Continue conversation message",
+      "webhookId": "ed60b34e-01b1-40c9-9b27-c2bf7372f28f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  output: $('Orchestra').first().json.output.replace('[END_SESSION]', '').trim()\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2672,
+        1824
+      ],
+      "id": "273c5b63-14e0-434e-98ce-fc795445ab67",
+      "name": "Clean [END_SESSION]"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Check si viene del Webhook de Meta en Producción (Estructura anidada: body.entry[0].changes[0].value)\nconst metaValue = input.body?.entry?.[0]?.changes?.[0]?.value;\n\n// 1. Extraer contacts (si es producción lo construimos, si es test ya existe)\nlet contacts = [];\nif (metaValue) {\n  // Entorno de PRODUCCIÓN\n  contacts = metaValue.contacts || [\n    {\n      profile: { name: metaValue.messages?.[0]?.from || \"\" },\n      wa_id: metaValue.messages?.[0]?.from || \"\"\n    }\n  ];\n} else {\n  // Entorno de TEST (WhatsApp Trigger)\n  contacts = input.contacts || [\n    {\n      profile: { name: \"\" },\n      wa_id: input.messages?.[0]?.from || \"\"\n    }\n  ];\n}\n\n// 2. Extraer array de mensajes\nconst messages = metaValue ? (metaValue.messages || []) : (input.messages || []);\n\n// 3. Extraer metadata útil (como el phone_number_id o display_phone_number)\nconst metadata = metaValue?.metadata || input.metadata || {};\n\n// Retornar la estructura estándar de n8n\nreturn {\n  contacts: contacts,\n  messages: messages,\n  metadata: metadata\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1072,
+        1440
+      ],
+      "id": "c65f754c-7be6-49fd-b1e3-bb3cffebb9a0",
+      "name": "Normalizador"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COALESCE(\n  (\n    SELECT is_human_active \n    FROM human_attention \n    WHERE session_id = '{{ $json.contacts[0].wa_id }}'\n      AND created_at > NOW() - INTERVAL '2 hours'\n    ORDER BY created_at DESC\n    LIMIT 1\n  ),\n  FALSE\n) AS is_human_active;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        -624,
+        1536
+      ],
+      "id": "b2fcbbdf-42d9-4202-b035-955ac4ffe479",
+      "name": "check_human_attention",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0c77b425-2e34-4656-8061-3d5ced942f4e",
+              "leftValue": "={{ $json.is_human_active }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -400,
+        1536
+      ],
+      "id": "5b4b1b27-4302-4b3c-9d9e-7d43128af5df",
+      "name": "check_human_response"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2e3e54c0-827b-4dc3-a5c8-2724342229c0",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "[END_SESSION]",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2448,
+        1920
+      ],
+      "id": "bb13023e-d00e-4f45-9bbb-7d14f8891440",
+      "name": "check END_SESSION"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2e3e54c0-827b-4dc3-a5c8-2724342229c0",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "[TRANSFER_HUMAN]",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2224,
+        1824
+      ],
+      "id": "605741b2-35ab-4ec3-b141-6f64b7915388",
+      "name": "check HUMAN_INTERCEPT"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO human_attention (session_id, is_human_active, created_at)\nVALUES ('{{ $('Normalizador').item.json.contacts[0].wa_id }}', TRUE, NOW())\nON CONFLICT (session_id) \nDO UPDATE SET is_human_active = TRUE, created_at = NOW();",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2448,
+        1632
+      ],
+      "id": "b2737c36-a06a-4693-afbd-75d0c8c9c972",
+      "name": "change_human_table",
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  output: $('Orchestra').first().json.output.replace('[TRANSFER_HUMAN]', '').trim()\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2672,
+        1632
+      ],
+      "id": "21f7b185-3050-4f7d-8c4d-7ccccf63187d",
+      "name": "Clean [TRANSFER_HUMAN]"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "YOUR_WHATSAPP_PHONE_NUMBER_ID",
+        "recipientPhoneNumber": "YOUR_RECIPIENT_PHONE",
+        "textBody": "={{ $('Clean [TRANSFER_HUMAN]').item.json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        2896,
+        1632
+      ],
+      "id": "7541d3a4-cb97-4d38-b7f4-1493d95a1175",
+      "name": "Human_Intercept_Message",
+      "webhookId": "ed60b34e-01b1-40c9-9b27-c2bf7372f28f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9e0dd09a-93ff-4bba-9e49-a59c7c20ddaf",
+              "leftValue": "={{ $('Normalizador').item.json.messages[0].text.body }}",
+              "rightValue": "/reset",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "={{ false }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1184,
+        1584
+      ],
+      "id": "8f8131cb-42b4-4262-8de0-d1ed3fc767ed",
+      "name": "check_reset_memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9e0dd09a-93ff-4bba-9e49-a59c7c20ddaf",
+              "leftValue": "={{ $('Normalizador').item.json.messages[0].text.body }}",
+              "rightValue": "/reset_human",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "={{ false }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -848,
+        1440
+      ],
+      "id": "ecfcfd9a-4139-42a7-ae6b-cc5b81b3747d",
+      "name": "check_reset_human"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM human_attention \nWHERE session_id = '{{ $('Normalizador').item.json.contacts[0].wa_id }}';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        -624,
+        1344
+      ],
+      "id": "902f5aab-dd7c-47ad-bebc-cc416f215b77",
+      "name": "delete_human_attention",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -168,
+        1464
+      ],
+      "id": "1b5b2fb7-3b5e-43ae-86b4-4e26d6b65d7a",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT clave, valor \nFROM informacion_farmacia\n\nUNION ALL\n\nSELECT 'guardia_hoy' AS clave, \n       nombre_farmacia || ' (' || direccion || ' - Tel: ' || telefono || ')' AS valor \nFROM farmacias_turno \nWHERE fecha = CURRENT_DATE;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.7,
+      "position": [
+        88,
+        1464
+      ],
+      "id": "0ce18551-a1a6-4f91-b68f-2389f140cf6b",
+      "name": "get_pharmacy_info1",
+      "notesInFlow": false,
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      },
+      "notes": "Busca en la base de datos de la farmacia el stock, precio y presentación \nde medicamentos por marca comercial o principio activo. Usar SIEMPRE que \nel cliente pregunte por disponibilidad, precio o stock de un medicamento \nespecífico, mencione el nombre de un medicamento, o envíe una receta médica."
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Mensaje actual del cliente:\n{{ $('Normalizador').item.json.messages[0].text.body }}",
+        "options": {
+          "systemMessage": "=Sos el asistente de información de Farmacia Zimmermann. El cliente está actualmente esperando a ser atendido en persona por la farmacéutica Alicia.\n\nREGLAS OBLIGATORIAS DE RESPUESTA:\n\n1. SI EL CLIENTE PREGUNTA SOBRE LA FARMACIA:\n   (Horarios de atención, días de apertura/cierre, dirección, ubicación, medios de pago, teléfono, Instagram o qué farmacia está de turno hoy)\n   - Utiliza la herramienta 'get_pharmacy_info' para consultar los datos exactos.\n   - Responde brevemente la duda.\n   - Agrega al final de tu mensaje: \"\\n\\n(Alicia te responderá en breve para tu consulta personal) 👩‍⚕️\"\n   - OBLIGATORIO: Agrega al inicio exacto de tu respuesta el prefijo: [INFO]\n\n2. SI EL CLIENTE PREGUNTA SOBRE CUALQUIER OTRA COSA:\n   (Stock de medicamentos, precios, remedios, recetas, promociones PAMI, reclamos, o comentarios de seguimiento/espera)\n   - NO USES NINGUNA HERRAMIENTA (TOOL).\n   - Responde de forma cordial indicando que Alicia ya está notificada.\n   - Texto exacto a responder: \"Alicia ya está al tanto de tu mensaje. En breve se comunicará con vos para responder tus dudas y asesorarte de forma personalizada. 👩‍⚕️\"\n   - OBLIGATORIO: Agrega al inicio exacto de tu respuesta el prefijo: [WAITING]\n\nEJEMPLOS DE SALIDA:\n- Entrada: \"¿A qué hora abren hoy?\"\n  Salida: \"INFO: Hoy atendemos de 8 a 20 hs. (Alicia te responderá en breve para tu consulta personal) 👩‍⚕️\"\n\n- Entrada: \"¿Tienen amoxicilina de 500?\"\n  Salida: \"WAITING: Alicia ya está al tanto de tu mensaje. En breve se comunicará con vos para responder tus dudas y asesorarte de forma personalizada. 👩‍⚕️\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -112,
+        1248
+      ],
+      "id": "2ec3745a-8164-4a58-9c68-3fdedf7c8707",
+      "name": "human_interceptor",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "YOUR_WHATSAPP_PHONE_NUMBER_ID",
+        "recipientPhoneNumber": "YOUR_RECIPIENT_PHONE",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        736,
+        1152
+      ],
+      "id": "8e5281b5-e822-4961-85d9-9c40ec6281ad",
+      "name": "continue_human_intercept",
+      "webhookId": "ed60b34e-01b1-40c9-9b27-c2bf7372f28f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT EXISTS (\n    SELECT 1 \n    FROM human_attention \n    WHERE session_id = '{{ $('Normalizador').item.json.contacts[0].wa_id }}'\n      AND last_warned_at > NOW() - INTERVAL '10 minutes'\n) AS was_recently_warned;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        736,
+        1344
+      ],
+      "id": "60ca64b0-3760-43c4-bdd7-0e8fc5465be3",
+      "name": "Check Last Warning Time",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0e79710e-a3e2-4c16-b3c0-ef008a5963b1",
+              "leftValue": "={{ $json.was_recently_warned }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        960,
+        1344
+      ],
+      "id": "0c99dda0-9701-436d-9049-203e4173aadb",
+      "name": "recently_warned?"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE human_attention \nSET last_warned_at = NOW() \nWHERE session_id = '{{ $('Normalizador').item.json.contacts[0].wa_id }}';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1184,
+        1344
+      ],
+      "id": "ab2e1ea7-6de2-43c5-9920-1601a00682ba",
+      "name": "update_warning_human",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d9a229e0-5979-4163-ab23-a6bdba0d1949",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "[INFO]",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        512,
+        1248
+      ],
+      "id": "1a0d0e31-677a-4ead-832c-39d4db886494",
+      "name": "check_info_waiting"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst rawOutput = input.output || \"\";\n\n// CASO 1: Información general (Horarios, Dirección, Pagos)\n// NO chequea tiempo -> Pasa directo al envío por WhatsApp\nif (rawOutput.startsWith(\"INFO:\")) {\n  return [\n    {\n      json: {\n        bypass_time_check: true, // Bandera para saltear PostgreSQL\n        text: rawOutput.replace(\"INFO:\", \"\").trim()\n      }\n    }\n  ];\n}\n\n// CASO 2: Consulta personal / Remedios / Espera\n// SÍ debe pasar por el chequeo de 10 minutos\nif (rawOutput.startsWith(\"WAITING:\")) {\n  return [\n    {\n      json: {\n        bypass_time_check: false, // Bandera para validar en PostgreSQL\n        text: rawOutput.replace(\"WAITING:\", \"\").trim()\n      }\n    }\n  ];\n}\n\n// Si no reconoce el formato, silencia\nreturn [];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        1248
+      ],
+      "id": "c2dad398-ceee-4336-8bcf-827a29861210",
+      "name": "remove_info_waiting"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "YOUR_WHATSAPP_PHONE_NUMBER_ID",
+        "recipientPhoneNumber": "YOUR_RECIPIENT_PHONE",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        1344
+      ],
+      "id": "d0c282b2-c770-4f6b-b35f-d3ef27d6a110",
+      "name": "continue_human_intercept1",
+      "webhookId": "ed60b34e-01b1-40c9-9b27-c2bf7372f28f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "YOUR_CREDENTIAL_NAME"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -453,7 +1062,7 @@
       "main": [
         [
           {
-            "node": "Switch",
+            "node": "Normalizador",
             "type": "main",
             "index": 0
           }
@@ -464,7 +1073,7 @@
       "main": [
         [
           {
-            "node": "If1",
+            "node": "check_reset_memory",
             "type": "main",
             "index": 0
           }
@@ -475,7 +1084,8 @@
             "type": "main",
             "index": 0
           }
-        ]
+        ],
+        []
       ]
     },
     "Google Gemini Chat Model": {
@@ -518,40 +1128,6 @@
         ]
       ]
     },
-    "Simple Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "Clean memory",
-            "type": "ai_memory",
-            "index": 0
-          },
-          {
-            "node": "Orchestra",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If1": {
-      "main": [
-        [
-          {
-            "node": "Clean memory",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Unificate JSON",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Webhook": {
       "main": [
         [
@@ -563,7 +1139,7 @@
         ],
         [
           {
-            "node": "Switch",
+            "node": "Normalizador",
             "type": "main",
             "index": 0
           }
@@ -607,7 +1183,7 @@
       "main": [
         [
           {
-            "node": "Send message",
+            "node": "check HUMAN_INTERCEPT",
             "type": "main",
             "index": 0
           }
@@ -629,17 +1205,316 @@
       "main": [
         []
       ]
+    },
+    "get_pharmacy_info": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestra",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clients_memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Orchestra",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Clean memory",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "human_interceptor",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete client memory by time": {
+      "main": [
+        [
+          {
+            "node": "Check >4 hours history",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "End session by intention": {
+      "main": [
+        [
+          {
+            "node": "Close Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean [END_SESSION]": {
+      "main": [
+        [
+          {
+            "node": "End session by intention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizador": {
+      "main": [
+        [
+          {
+            "node": "check_reset_human",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check_human_attention": {
+      "main": [
+        [
+          {
+            "node": "check_human_response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check_human_response": {
+      "main": [
+        [
+          {
+            "node": "human_interceptor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check END_SESSION": {
+      "main": [
+        [
+          {
+            "node": "Clean [END_SESSION]",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Continue conversation message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check HUMAN_INTERCEPT": {
+      "main": [
+        [
+          {
+            "node": "change_human_table",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "check END_SESSION",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "change_human_table": {
+      "main": [
+        [
+          {
+            "node": "Clean [TRANSFER_HUMAN]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean [TRANSFER_HUMAN]": {
+      "main": [
+        [
+          {
+            "node": "Human_Intercept_Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check_reset_memory": {
+      "main": [
+        [
+          {
+            "node": "Clean memory",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unificate JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check_reset_human": {
+      "main": [
+        [
+          {
+            "node": "delete_human_attention",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "check_human_attention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "human_interceptor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_pharmacy_info1": {
+      "ai_tool": [
+        [
+          {
+            "node": "human_interceptor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "human_interceptor": {
+      "main": [
+        [
+          {
+            "node": "remove_info_waiting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Last Warning Time": {
+      "main": [
+        [
+          {
+            "node": "recently_warned?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recently_warned?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "update_warning_human",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update_warning_human": {
+      "main": [
+        [
+          {
+            "node": "continue_human_intercept1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check_info_waiting": {
+      "main": [
+        [
+          {
+            "node": "continue_human_intercept",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Last Warning Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "remove_info_waiting": {
+      "main": [
+        [
+          {
+            "node": "check_info_waiting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "FRR0uIZRxD9daRsU",
+    "callerPolicy": "workflowsFromSameOwner"
   },
+  "versionId": "dc6b8d22-64a5-4d6d-b6a1-e211980a4765",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "GENERIC_INSTANCE_ID"
+    "instanceId": "92fa3799217cd9ca8dfcaea05300e6e982d6ec0b2da390320d629c434b0a96cf"
   },
   "nodeGroups": [],
   "id": "fGqlLynEUcfOODJl",
